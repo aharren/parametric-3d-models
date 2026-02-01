@@ -10,8 +10,9 @@ const { withPreviewVisuals } = require('../../lib/visuals');
 
 const main = (params) => {
   const wallThickness = 2;
-  const innerSize = [200, 25, 18];
+  const innerSize = [200, 21, 18];
   const innerOuterDistance = 0.5;
+  const additionalOuterHeight = 0.5;
   const cornerRadius = 0.8;
   const innerGrabHoleRadius = 10;
   const outerGrabHoleRadius = 14;
@@ -20,7 +21,7 @@ const main = (params) => {
   const segments = 64;
 
   const innerBoxSize = [innerSize[0] + wallThickness * 2, innerSize[1] + wallThickness * 2, innerSize[2] + wallThickness * 1];
-  const outerBoxSize = [innerBoxSize[0] + wallThickness * 2 + innerOuterDistance, innerBoxSize[1] + wallThickness * 2 + innerOuterDistance, innerBoxSize[2] + wallThickness * 1];
+  const outerBoxSize = [innerBoxSize[0] + wallThickness * 2 + innerOuterDistance, innerBoxSize[1] + wallThickness * 2 + innerOuterDistance, innerBoxSize[2] + wallThickness * 1 + additionalOuterHeight];
 
   const innerBox = () => {
     const box = align({}, openBox({ size: innerBoxSize, wallThickness, outerCornerRadius: cornerRadius, segments }));
