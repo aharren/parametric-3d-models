@@ -1,12 +1,12 @@
 'use strict';
 
-const { cube } = require('@jscad/modeling').primitives;
+const { cuboid } = require('@jscad/modeling').primitives;
 const { align } = require('@jscad/modeling').transforms;
 
 const preview = require('../../lib/preview');
 
 const main = (params) => {
-  const object = cube({ size: 50 });
+  const object = cuboid({ size: [50, 40, 30] });
   return align({}, object);
 }
 
