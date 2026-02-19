@@ -86,8 +86,8 @@ const main = (params) => {
   };
 
   return [
-    translate([0, 10, 0], align({ modes: ['none', 'min', 'none'] }, enclosureBox())),
     translate([0, -10, 0], align({ modes: ['none', 'max', 'none'] }, enclosureLid())),
+    translate([0, 10, 0], align({ modes: ['none', 'min', 'none'] }, enclosureBox())),
   ];
 }
 
