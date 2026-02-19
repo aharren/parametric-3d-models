@@ -1,9 +1,9 @@
 const { cuboid, sphere, cylinder } = require('@jscad/modeling').primitives;
 const { intersect, subtract, union } = require('@jscad/modeling').booleans;
-const { colorize, colorNameToRgb } = require('@jscad/modeling').colors;
 const { mirrorX, mirrorY, rotateX } = require('@jscad/modeling').transforms;
 const { measureDimensions } = require('@jscad/modeling').measurements;
 
+const colors = require('../../lib/colors');
 const preview = require('../../lib/preview');
 
 const OBJECT_BALL = 'ball';
@@ -136,9 +136,9 @@ const main = (params) => {
   }
 
   return [
-    ...object === OBJECT_BALL ? [colorize(colorNameToRgb("red"), ball())] : [],
-    ...object === OBJECT_ENCLOSING ? [colorize(colorNameToRgb("blue"), enclosing())] : [],
-    ...object === OBJECT_ROTATION_ELEMENT ? [colorize(colorNameToRgb("yellow"), rotation_element())] : [],
+    ...object === OBJECT_BALL ? [colors.red(ball())] : [],
+    ...object === OBJECT_ENCLOSING ? [colors.blue(enclosing())] : [],
+    ...object === OBJECT_ROTATION_ELEMENT ? [colors.yellow(rotation_element())] : [],
   ];
 }
 
