@@ -84,7 +84,7 @@ const main = (params) => {
     return grid.center(model);
   };
 
-  return grid.distributeY(20, enclosureLid(), enclosureBox());
+  return grid.distribute([null, 20, null], enclosureLid(), enclosureBox());
 }
 
 module.exports = { ...preview.main({}, main) };
