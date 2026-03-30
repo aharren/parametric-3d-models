@@ -66,11 +66,13 @@ const main = (params) => {
       objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
     }
 
-    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: 2, dimensions: [0, 0, tube1.height], mirror: [false, false, !mirror] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'left'], distance: 2, dimensions: [tube1.startOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 8, dimensions: [tube1.startInnerRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 8, dimensions: [tube1.endInnerRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, 7.5], dimensions: [0, 0, tube1.height], mirror: [false, false, !mirror] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 7.5, dimensions: [tube1.startOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube1.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube1.startInnerRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 7.5, dimensions: [tube1.endOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endInnerRadius * 2, 0, 0] }, objects[0])));
 
     const result = translate([tube3.outerRadius, 0, 0], objects);
     return mirror ? mirrorZ(result) : result;
