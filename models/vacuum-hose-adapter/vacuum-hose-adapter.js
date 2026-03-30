@@ -36,7 +36,7 @@ const main = (params) => {
   const connector1 = connector(connectTo1);
   const connector2 = connector(connectTo2);
 
-  const half = (c) => {
+  const half = (c, mirror) => {
     const bendOuterRadius = Math.min(connector1.outerRadiusRingA, connector2.outerRadiusRingA);
     const bendInnerRadius = Math.min(connector1.innerRadiusRingA, connector2.innerRadiusRingA);
     const tube1 = {
@@ -66,15 +66,20 @@ const main = (params) => {
       objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
     }
 
-    objects.push(preview.only(visuals.dimensions({ modes: ['default', 'none', 'default'] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: 2, dimensions: [0, 0, tube1.height], mirror: [false, false, !mirror] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'left'], distance: 2, dimensions: [tube1.startOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 8, dimensions: [tube1.startInnerRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 8, dimensions: [tube1.endInnerRadius * 2, 0, 0] }, objects[0])));
 
-    return translate([tube3.outerRadius, 0, 0], objects);
+    const result = translate([tube3.outerRadius, 0, 0], objects);
+    return mirror ? mirrorZ(result) : result;
   }
 
   const objects = [];
-  const half1 = half(connector1);
+  const half1 = half(connector1, false);
   objects.push(rotate([0, -bendAngle / 2, 0], align({ modes: ['none', 'none', 'max'], grouped: true }, half1)));
-  const half2 = mirrorZ(half(connector2));
+  const half2 = half(connector2, true);
   objects.push(rotate([0, bendAngle / 2, 0], align({ modes: ['none', 'none', 'min'], grouped: true }, half2)));
   return align({ grouped: true }, rotate([0, bendAngle / 2, 0], objects));
 }
