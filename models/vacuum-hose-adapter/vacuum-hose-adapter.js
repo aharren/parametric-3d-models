@@ -1,6 +1,5 @@
 'use strict';
 
-const { union } = require('@jscad/modeling').booleans;
 const { rotate, translate, align, mirrorZ } = require('@jscad/modeling').transforms;
 const { degToRad } = require('@jscad/modeling/src').utils;
 
@@ -9,44 +8,63 @@ const cuts = require('../../lib/cuts');
 const visuals = require('../../lib/visuals');
 const preview = require('../../lib/preview');
 
-const sizes = require('../lib/sizes');
+const connectors = require('../lib/connectors');
 
 const main = (params) => {
-  const connector1 = sizes.bosch.vacuumConnectorOrbitalSanderGSS12V13.outer;
-  const connector2 = sizes.festool.hoseConnector34.outer;
+  const connectTo1 = connectors.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug;
+  const connectTo2 = connectors.festool.hoseConnector34.plug;
+  //const connectTo1 = connectors.test.o30i25.plug;
+  //const connectTo2 = connectors.test.o30i25.socket;
+
   const bendAngle = degToRad(30);
   const bendLength = 18;
   const wallThickness = 2;
   const segments = 64;
 
-  const half = (connector) => {
-    const bendOuterDiameter = Math.min(connector1.diameterA, connector2.diameterA);
-    const bendInnerDiameter = Math.min(connector1.diameterRingA, connector2.diameterRingA);
+  const connector = (c) => {
+    const r = {};
+    r.outerRadiusA = c.isPlug ? c.outerDiameterA / 2 + wallThickness : c.innerDiameterA / 2;
+    r.innerRadiusA = r.outerRadiusA - wallThickness;
+    r.outerRadiusB = c.isPlug ? c.outerDiameterB / 2 + wallThickness : c.innerDiameterB / 2;
+    r.innerRadiusB = r.outerRadiusB - wallThickness;
+    r.distanceAB = c.distanceAB;
+    r.outerRadiusRingA = c.isPlug ? c.outerDiameterA / 2 + wallThickness : c.outerDiameterA / 2;
+    r.innerRadiusRingA = c.isPlug ? c.innerDiameterA / 2 : c.innerDiameterA / 2 - wallThickness;
+    r.heightRingA = c.heightRingA ?? 5;
+    return r;
+  }
+  const connector1 = connector(connectTo1);
+  const connector2 = connector(connectTo2);
 
+  const half = (c) => {
+    const bendOuterRadius = Math.min(connector1.outerRadiusRingA, connector2.outerRadiusRingA);
+    const bendInnerRadius = Math.min(connector1.innerRadiusRingA, connector2.innerRadiusRingA);
     const tube1 = {
-      startOuterRadius: connector.diameterB / 2 + wallThickness,
-      startInnerRadius: connector.diameterB / 2,
-      endOuterRadius: connector.diameterA / 2 + wallThickness,
-      endInnerRadius: connector.diameterA / 2,
-      height: connector.distanceAB,
+      startOuterRadius: c.outerRadiusB,
+      startInnerRadius: c.innerRadiusB,
+      endOuterRadius: c.outerRadiusA,
+      endInnerRadius: c.innerRadiusA,
+      height: c.distanceAB,
     };
     const tube2 = {
-      startOuterRadius: connector.diameterA / 2 + wallThickness,
-      startInnerRadius: connector.diameterRingA / 2,
-      endOuterRadius: bendOuterDiameter / 2 + wallThickness,
-      endInnerRadius: bendInnerDiameter / 2,
-      height: connector.heightRingA,
+      startOuterRadius: c.outerRadiusRingA,
+      startInnerRadius: c.innerRadiusRingA,
+      endOuterRadius: bendOuterRadius,
+      endInnerRadius: bendInnerRadius,
+      height: c.heightRingA,
     };
     const tube3 = {
-      outerRadius: bendOuterDiameter / 2 + wallThickness,
-      innerRadius: bendInnerDiameter / 2,
+      outerRadius: bendOuterRadius,
+      innerRadius: bendInnerRadius,
       height: bendLength / 2,
     };
 
     const objects = [];
     objects.push(align({}, tubeElliptic({ ...tube1, segments })));
     objects.push(translate([0, 0, tube1.height], align({}, tubeElliptic({ ...tube2, segments }))));
-    objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
+    if (tube3.height > 0) {
+      objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
+    }
 
     objects.push(preview.only(visuals.dimensions({ modes: ['default', 'none', 'default'] }, objects[0])));
 

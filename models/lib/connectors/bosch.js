@@ -1,11 +1,12 @@
 'use strict';
 
 const vacuumConnectorOrbitalSanderGSS12V13 = {
-  outer: {
-    diameterA: 28,
-    diameterB: 28,
+  plug: {
+    isPlug: true,
+    outerDiameterA: 28,
+    outerDiameterB: 28,
     distanceAB: 24,
-    diameterRingA: 24,
+    innerDiameterA: 24,
     heightRingA: 5,
   },
 };

@@ -1,11 +1,12 @@
 'use strict';
 
 const hoseConnector34 = {
-  outer: {
-    diameterA: 34,
-    diameterB: 36,
+  plug: {
+    isPlug: true,
+    outerDiameterA: 34,
+    outerDiameterB: 36,
     distanceAB: 30,
-    diameterRingA: 30,
+    innerDiameterA: 30,
     heightRingA: 10,
   }
 }
