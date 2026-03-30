@@ -6,6 +6,7 @@ const { degToRad } = require('@jscad/modeling/src').utils;
 
 const { tube, tubeElliptic } = require('../../lib/tubes');
 const cuts = require('../../lib/cuts');
+const visuals = require('../../lib/visuals');
 const preview = require('../../lib/preview');
 
 const sizes = require('../lib/sizes');
@@ -46,15 +47,18 @@ const main = (params) => {
     objects.push(align({}, tubeElliptic({ ...tube1, segments })));
     objects.push(translate([0, 0, tube1.height], align({}, tubeElliptic({ ...tube2, segments }))));
     objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
-    return translate([tube3.outerRadius, 0, 0], union(objects));
+
+    objects.push(preview.only(visuals.dimensions({ modes: ['default', 'none', 'default'] }, objects[0])));
+
+    return translate([tube3.outerRadius, 0, 0], objects);
   }
 
   const objects = [];
   const half1 = half(connector1);
-  objects.push(rotate([0, -bendAngle / 2, 0], align({ modes: ['none', 'none', 'max'] }, half1)));
+  objects.push(rotate([0, -bendAngle / 2, 0], align({ modes: ['none', 'none', 'max'], grouped: true }, half1)));
   const half2 = mirrorZ(half(connector2));
-  objects.push(rotate([0, bendAngle / 2, 0], align({ modes: ['none', 'none', 'min'] }, half2)));
-  return align({}, rotate([0, bendAngle / 2, 0], union(objects)));
+  objects.push(rotate([0, bendAngle / 2, 0], align({ modes: ['none', 'none', 'min'], grouped: true }, half2)));
+  return align({ grouped: true }, rotate([0, bendAngle / 2, 0], objects));
 }
 
-module.exports = { ...preview.main({ xRay: true }, main) };
+module.exports = { ...preview.main({ xRay: true, dimensions: false }, main) };
