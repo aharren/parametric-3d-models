@@ -17,9 +17,32 @@ const o30i25 = {
     outerDiameterA: 28,
     heightRingA: 5,
   },
+};
 
+const o57 = {
+  plug: {
+    isPlug: true,
+    outerDiameterA: 57,
+    outerDiameterB: 59,
+    distanceAB: 55,
+    innerDiameterA: 54,
+    heightRingA: 25,
+  },
+};
+
+const o50 = {
+  socket: {
+    isSocket: true,
+    innerDiameterA: 50,
+    innerDiameterB: 48,
+    distanceAB: 55,
+    outerDiameterA: 55,
+    heightRingA: 5,
+  },
 };
 
 module.exports = {
   o30i25,
+  o57,
+  o50,
 };
