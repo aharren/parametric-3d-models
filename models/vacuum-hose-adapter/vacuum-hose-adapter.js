@@ -3,8 +3,7 @@
 const { rotate, translate, align, mirrorZ } = require('@jscad/modeling').transforms;
 const { degToRad } = require('@jscad/modeling/src').utils;
 
-const { tube, tubeElliptic } = require('../../lib/tubes');
-const cuts = require('../../lib/cuts');
+const { tubeElliptic, tubeCurved } = require('../../lib/tubes');
 const visuals = require('../../lib/visuals');
 const preview = require('../../lib/preview');
 
@@ -17,7 +16,6 @@ const main = (params) => {
   //const connectTo2 = connectors.test.o30i25.socket;
 
   const bendAngle = degToRad(30);
-  const bendLength = 18;
   const wallThickness = 2;
   const segments = 64;
 
@@ -36,54 +34,72 @@ const main = (params) => {
   const connector1 = connector(connectTo1);
   const connector2 = connector(connectTo2);
 
-  const half = (c, mirror) => {
-    const bendOuterRadius = Math.min(connector1.outerRadiusRingA, connector2.outerRadiusRingA);
-    const bendInnerRadius = Math.min(connector1.innerRadiusRingA, connector2.innerRadiusRingA);
-    const tube1 = {
+  const bendOuterRadius = Math.min(connector1.outerRadiusRingA, connector2.outerRadiusRingA);
+  const bendInnerRadius = Math.min(connector1.innerRadiusRingA, connector2.innerRadiusRingA);
+  const bendCurveRadius = bendOuterRadius * 2;
+
+  const segmentBA = (c, mirror) => {
+    const tube = {
       startOuterRadius: c.outerRadiusB,
       startInnerRadius: c.innerRadiusB,
       endOuterRadius: c.outerRadiusA,
       endInnerRadius: c.innerRadiusA,
       height: c.distanceAB,
     };
-    const tube2 = {
+
+    const objects = [];
+    objects.push(tubeElliptic({ ...tube, segments }));
+
+    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, 7.5], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 7.5, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 7.5, dimensions: [tube.endOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
+
+    return align({ modes: ['none', 'none', 'min'], grouped: true }, mirror ? mirrorZ(objects) : objects);
+  }
+
+  const segmentRingA = (c, mirror) => {
+    const tube = {
       startOuterRadius: c.outerRadiusRingA,
       startInnerRadius: c.innerRadiusRingA,
       endOuterRadius: bendOuterRadius,
       endInnerRadius: bendInnerRadius,
       height: c.heightRingA,
     };
-    const tube3 = {
+
+    const objects = [];
+    objects.push(tubeElliptic({ ...tube, segments }));
+
+    return align({ modes: ['none', 'none', 'min'], grouped: true }, mirror ? mirrorZ(objects) : objects);
+  }
+
+  const segmentCurve = () => {
+    const tube = {
       outerRadius: bendOuterRadius,
       innerRadius: bendInnerRadius,
-      height: bendLength / 2,
+      curveRadius: bendCurveRadius,
+      angle: -bendAngle,
     };
 
     const objects = [];
-    objects.push(align({}, tubeElliptic({ ...tube1, segments })));
-    objects.push(translate([0, 0, tube1.height], align({}, tubeElliptic({ ...tube2, segments }))));
-    if (tube3.height > 0) {
-      objects.push(translate([0, 0, tube1.height + tube2.height], cuts.miterCutTop({ angles: [0, -bendAngle / 2] }, align({}, tube({ ...tube3, segments })))));
-    }
+    objects.push(tubeCurved({ ...tube, segments }));
 
-    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, 7.5], dimensions: [0, 0, tube1.height], mirror: [false, false, !mirror] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 7.5, dimensions: [tube1.startOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube1.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube1.startInnerRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 7.5, dimensions: [tube1.endOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube1.endInnerRadius * 2, 0, 0] }, objects[0])));
-
-    const result = translate([tube3.outerRadius, 0, 0], objects);
-    return mirror ? mirrorZ(result) : result;
+    return objects;
   }
 
   const objects = [];
-  const half1 = half(connector1, false);
-  objects.push(rotate([0, -bendAngle / 2, 0], align({ modes: ['none', 'none', 'max'], grouped: true }, half1)));
-  const half2 = half(connector2, true);
-  objects.push(rotate([0, bendAngle / 2, 0], align({ modes: ['none', 'none', 'min'], grouped: true }, half2)));
-  return align({ grouped: true }, rotate([0, bendAngle / 2, 0], objects));
+  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1.distanceAB - connector1.heightRingA], segmentBA(connector1, false))));
+  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1.heightRingA], segmentRingA(connector1, false))));
+  if (bendAngle > 0) {
+    objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0], segmentCurve())));
+  }
+  objects.push(translate([-bendCurveRadius, 0, 0], segmentRingA(connector2, true)));
+  objects.push(translate([-bendCurveRadius, 0, connector2.heightRingA], segmentBA(connector2, true)));
+
+  return align({ grouped: true }, rotate([0, bendAngle, 0], objects));
 }
 
 module.exports = { ...preview.main({ xRay: true, dimensions: false }, main) };
