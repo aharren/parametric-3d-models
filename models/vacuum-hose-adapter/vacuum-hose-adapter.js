@@ -48,7 +48,7 @@ const main = (params) => {
     };
 
     const objects = [];
-    objects.push(tubeElliptic({ ...tube, segments }));
+    objects.push(align({}, tubeElliptic({ ...tube, segments })));
 
     objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, 7.5], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0])));
     objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 7.5, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0])));
@@ -58,7 +58,7 @@ const main = (params) => {
     objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
     objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
 
-    return align({ modes: ['none', 'none', 'min'], grouped: true }, mirror ? mirrorZ(objects) : objects);
+    return translate([0, 0, mirror ? tube.height : 0], mirror ? mirrorZ(objects) : objects);
   }
 
   const segmentRingA = (c, mirror) => {
@@ -71,9 +71,9 @@ const main = (params) => {
     };
 
     const objects = [];
-    objects.push(tubeElliptic({ ...tube, segments }));
+    objects.push(align({}, tubeElliptic({ ...tube, segments })));
 
-    return align({ modes: ['none', 'none', 'min'], grouped: true }, mirror ? mirrorZ(objects) : objects);
+    return translate([0, 0, mirror ? tube.height : 0], mirror ? mirrorZ(objects) : objects);
   }
 
   const segmentCurve = () => {
