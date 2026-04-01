@@ -24,5 +24,5 @@ Run the `model-to-stla` script and pass the name of the model file to create an 
 
 Example:
 ```
-./model-to-stla models/box/box.js
+./scripts/model-to-stla models/box/box.js
 ```
