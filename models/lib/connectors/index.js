@@ -1,11 +1,7 @@
 'use strict';
 
-const test = require('./test');
-const bosch = require('./bosch');
-const festool = require('./festool');
+const library = require('./library');
 
 module.exports = {
-  test,
-  bosch,
-  festool,
+  library,
 };

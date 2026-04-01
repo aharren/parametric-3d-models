@@ -10,8 +10,8 @@ const preview = require('../../lib/preview');
 const connectors = require('../lib/connectors');
 
 const main = (params) => {
-  const connectTo1 = connectors.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug;
-  const connectTo2 = connectors.festool.hoseConnector34.plug;
+  const connectTo1 = connectors.library.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug;
+  const connectTo2 = connectors.library.festool.hoseConnector34.plug;
   //const connectTo1 = connectors.test.o30i25.plug;
   //const connectTo2 = connectors.test.o30i25.socket;
 
