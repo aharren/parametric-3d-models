@@ -25,7 +25,7 @@ const o57 = {
     outerDiameterA: 57,
     outerDiameterB: 59,
     distanceAB: 55,
-    innerDiameterA: 54,
+    innerDiameterA: 53,
     heightRingA: 25,
   },
 };
