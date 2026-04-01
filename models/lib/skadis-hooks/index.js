@@ -4,7 +4,7 @@ const { cuboid, cylinder } = require('@jscad/modeling').primitives;
 const { union } = require('@jscad/modeling').booleans;
 const { rotateX, rotateZ, center } = require('@jscad/modeling').transforms;
 
-const colors = require('../../../lib/colors');
+const colorize = require('../../../lib/colorize');
 const grid = require('../../../lib/grid');
 
 const sizes = {
@@ -54,11 +54,11 @@ const hookGrid = (width, height, mode = 0, symmetric = true) => {
 const main = (params) => {
   const width = 100;
   const height = 50;
-  const object = colors.transparent(cuboid({ size: [width, width, height] }));
-  const hookGrid1 = colors.red(rotateZ(1 * Math.PI, hookGrid(width, height, 0, true)));
-  const hookGrid2 = colors.blue(rotateZ(-0.5 * Math.PI, hookGrid(width, height, 0, false)));
-  const hookGrid3 = colors.yellow(rotateZ(0 * Math.PI, hookGrid(width, height, 1, true)));
-  const hookGrid4 = colors.black(rotateZ(0.5 * Math.PI, hookGrid(width, height, 1, false)));
+  const object = colorize.transparent(cuboid({ size: [width, width, height] }));
+  const hookGrid1 = colorize.red(rotateZ(1 * Math.PI, hookGrid(width, height, 0, true)));
+  const hookGrid2 = colorize.blue(rotateZ(-0.5 * Math.PI, hookGrid(width, height, 0, false)));
+  const hookGrid3 = colorize.yellow(rotateZ(0 * Math.PI, hookGrid(width, height, 1, true)));
+  const hookGrid4 = colorize.black(rotateZ(0.5 * Math.PI, hookGrid(width, height, 1, false)));
   const part1 = grid.distribute([null, 0, null], hookGrid1, object, hookGrid3);
   const part2 = grid.distribute([0, null, null], hookGrid4, object, hookGrid2);
   return [...part1, part2[0], part2[2]];

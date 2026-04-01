@@ -3,7 +3,7 @@ const { intersect, subtract, union } = require('@jscad/modeling').booleans;
 const { mirrorX, mirrorY, rotateX } = require('@jscad/modeling').transforms;
 const { measureDimensions } = require('@jscad/modeling').measurements;
 
-const colors = require('../../lib/colors');
+const colorize = require('../../lib/colorize');
 const preview = require('../../lib/preview');
 
 const OBJECT_BALL = 'ball';
@@ -136,9 +136,9 @@ const main = (params) => {
   }
 
   return [
-    ...object === OBJECT_BALL ? [colors.red(ball())] : [],
-    ...object === OBJECT_ENCLOSING ? [colors.blue(enclosing())] : [],
-    ...object === OBJECT_ROTATION_ELEMENT ? [colors.yellow(rotation_element())] : [],
+    ...object === OBJECT_BALL ? [colorize.red(ball())] : [],
+    ...object === OBJECT_ENCLOSING ? [colorize.blue(enclosing())] : [],
+    ...object === OBJECT_ROTATION_ELEMENT ? [colorize.yellow(rotation_element())] : [],
   ];
 }
 
