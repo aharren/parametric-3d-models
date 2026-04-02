@@ -33,6 +33,7 @@ const plug = (params) => {
     heightRingA: params.heightRingA ?? defaultHeightRingA,
   };
   object.wallThickness = Math.abs(object.outerDiameterA - object.innerDiameterA);
+  object.innerDiameterB = object.outerDiameterB - object.wallThickness;
   return object;
 }
 
@@ -46,6 +47,7 @@ const socket = (params) => {
     heightRingA: params.heightRingA ?? defaultHeightRingA,
   };
   object.wallThickness = Math.abs(object.outerDiameterA - object.innerDiameterA);
+  object.outerDiameterB = object.innerDiameterB + object.wallThickness;
   return object;
 }
 
