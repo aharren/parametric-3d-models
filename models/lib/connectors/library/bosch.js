@@ -6,9 +6,9 @@ const vacuumConnectorOrbitalSanderGSS12V13 = {
   plug:
     construct.plug({
       outerDiameterA: 28,
-      outerDiameterB: 28,
-      distanceAB: 24,
       innerDiameterA: 24,
+      distanceAB: 24,
+      outerDiameterB: 28,
       heightRingA: 5,
     }),
 };

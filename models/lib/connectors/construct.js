@@ -23,13 +23,14 @@ const param = (params, name) => {
   };
 }
 
+// constructs a plug connector with the given diameters; end A is at the outer, open end
 const plug = (params) => {
   const object = {
     ...type(TYPE_PLUG),
     ...param(params, 'outerDiameterA'),
-    ...param(params, 'outerDiameterB'),
-    ...param(params, 'distanceAB'),
     ...param(params, 'innerDiameterA'),
+    ...param(params, 'distanceAB'),
+    ...param(params, 'outerDiameterB'),
     heightRingA: params.heightRingA ?? defaultHeightRingA,
   };
   object.wallThickness = Math.abs(object.outerDiameterA - object.innerDiameterA);
@@ -37,13 +38,14 @@ const plug = (params) => {
   return object;
 }
 
+// constructs a socket connector with the given diameters; end A is at the outer, open end
 const socket = (params) => {
   const object = {
     ...type(TYPE_SOCKET),
-    ...param(params, 'innerDiameterA'),
-    ...param(params, 'innerDiameterB'),
-    ...param(params, 'distanceAB'),
     ...param(params, 'outerDiameterA'),
+    ...param(params, 'innerDiameterA'),
+    ...param(params, 'distanceAB'),
+    ...param(params, 'innerDiameterB'),
     heightRingA: params.heightRingA ?? defaultHeightRingA,
   };
   object.wallThickness = Math.abs(object.outerDiameterA - object.innerDiameterA);
@@ -51,23 +53,25 @@ const socket = (params) => {
   return object;
 }
 
+// inverts the given connector, e.g. creates a socket connector from a plug connector
 const invert = (options, object) => {
   const play = options.play ?? 0;
+
   switch (object.type) {
     case TYPE_PLUG:
       return socket({
-        innerDiameterA: object.outerDiameterA + play,
-        innerDiameterB: object.outerDiameterB + play,
-        distanceAB: object.distanceAB,
         outerDiameterA: object.outerDiameterA + object.wallThickness + play,
+        innerDiameterA: object.outerDiameterA + play,
+        distanceAB: object.distanceAB,
+        innerDiameterB: object.outerDiameterB + play,
         heightRingA: object.heightRingA,
       });
     case TYPE_SOCKET:
       return plug({
         outerDiameterA: object.innerDiameterA - play,
-        outerDiameterB: object.innerDiameterB - play,
-        distanceAB: object.distanceAB,
         innerDiameterA: object.innerDiameterA - object.wallThickness - play,
+        distanceAB: object.distanceAB,
+        outerDiameterB: object.innerDiameterB - play,
         heightRingA: object.heightRingA,
       });
     default:

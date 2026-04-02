@@ -6,9 +6,9 @@ const hoseConnector34 = {
   plug:
     construct.plug({
       outerDiameterA: 34,
-      outerDiameterB: 36,
-      distanceAB: 30,
       innerDiameterA: 30,
+      distanceAB: 30,
+      outerDiameterB: 36,
       heightRingA: 10,
     }),
 }
