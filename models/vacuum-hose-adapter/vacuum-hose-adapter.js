@@ -10,32 +10,28 @@ const preview = require('../../lib/preview');
 const connectors = require('../lib/connectors');
 
 const main = (params) => {
-  const connectTo1 = connectors.library.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug;
-  const connectTo2 = connectors.library.festool.hoseConnector34.plug;
-  //const connectTo1 = connectors.test.o30i25.plug;
-  //const connectTo2 = connectors.test.o30i25.socket;
-
+  const connector1 = connectors.invert({ play: 0.0 }, connectors.library.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug);
+  const connector2 = connectors.invert({ play: 0.0 }, connectors.library.festool.hoseConnector34.plug);
   const bendAngle = degToRad(30);
   const wallThickness = 2;
   const segments = 64;
 
-  const connector = (c) => {
+  const radius = (c) => {
     const r = {};
-    r.outerRadiusA = c.isPlug ? c.outerDiameterA / 2 + wallThickness : c.innerDiameterA / 2;
+    r.outerRadiusA = c.isSocket ? c.innerDiameterA / 2 + wallThickness : c.outerDiameterA / 2;
     r.innerRadiusA = r.outerRadiusA - wallThickness;
-    r.outerRadiusB = c.isPlug ? c.outerDiameterB / 2 + wallThickness : c.innerDiameterB / 2;
+    r.outerRadiusB = c.isSocket ? c.innerDiameterB / 2 + wallThickness : c.outerDiameterB / 2;
     r.innerRadiusB = r.outerRadiusB - wallThickness;
+    r.outerRadiusRingA = c.isSocket ? r.outerRadiusA : r.outerRadiusA + wallThickness;
+    r.innerRadiusRingA = c.isSocket ? r.innerRadiusA - wallThickness : r.innerRadiusA;
     r.distanceAB = c.distanceAB;
-    r.outerRadiusRingA = c.isPlug ? c.outerDiameterA / 2 + wallThickness : c.outerDiameterA / 2;
-    r.innerRadiusRingA = c.isPlug ? c.innerDiameterA / 2 : c.innerDiameterA / 2 - wallThickness;
     r.heightRingA = c.heightRingA ?? 5;
     return r;
   }
-  const connector1 = connector(connectTo1);
-  const connector2 = connector(connectTo2);
-
-  const bendOuterRadius = Math.min(connector1.outerRadiusRingA, connector2.outerRadiusRingA);
-  const bendInnerRadius = Math.min(connector1.innerRadiusRingA, connector2.innerRadiusRingA);
+  const connector1Radius = radius(connector1);
+  const connector2Radius = radius(connector2);
+  const bendOuterRadius = Math.min(connector1Radius.outerRadiusRingA, connector2Radius.outerRadiusRingA);
+  const bendInnerRadius = Math.min(connector1Radius.innerRadiusRingA, connector2Radius.innerRadiusRingA);
   const bendCurveRadius = bendOuterRadius * 2;
 
   const segmentBA = (c, mirror) => {
@@ -91,13 +87,13 @@ const main = (params) => {
   }
 
   const objects = [];
-  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1.distanceAB - connector1.heightRingA], segmentBA(connector1, false))));
-  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1.heightRingA], segmentRingA(connector1, false))));
+  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1Radius.distanceAB - connector1Radius.heightRingA], segmentBA(connector1Radius, false))));
+  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1Radius.heightRingA], segmentRingA(connector1Radius, false))));
   if (bendAngle > 0) {
     objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0], segmentCurve())));
   }
-  objects.push(translate([-bendCurveRadius, 0, 0], segmentRingA(connector2, true)));
-  objects.push(translate([-bendCurveRadius, 0, connector2.heightRingA], segmentBA(connector2, true)));
+  objects.push(translate([-bendCurveRadius, 0, 0], segmentRingA(connector2Radius, true)));
+  objects.push(translate([-bendCurveRadius, 0, connector2Radius.heightRingA], segmentBA(connector2Radius, true)));
 
   return align({ grouped: true }, rotate([0, bendAngle, 0], objects));
 }
