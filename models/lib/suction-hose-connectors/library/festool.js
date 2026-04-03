@@ -2,11 +2,11 @@
 
 const construct = require('../construct');
 
-const hoseConnector34 = {
+const ConnectingSleeve_O34_I27 = {
   plug:
     construct.plug({
       outerDiameterA: 34,
-      innerDiameterA: 30,
+      innerDiameterA: 27,
       distanceAB: 30,
       outerDiameterB: 36,
       heightRingA: 10,
@@ -14,5 +14,5 @@ const hoseConnector34 = {
 }
 
 module.exports = {
-  hoseConnector34,
+  ConnectingSleeve_O34_I27,
 };

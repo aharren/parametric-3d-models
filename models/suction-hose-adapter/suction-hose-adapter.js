@@ -7,11 +7,11 @@ const { tubeElliptic, tubeCurved } = require('../../lib/tubes');
 const visuals = require('../../lib/visuals');
 const preview = require('../../lib/preview');
 
-const connectors = require('../lib/connectors');
+const connectors = require('../lib/suction-hose-connectors');
 
 const main = (params) => {
-  const connector1 = connectors.invert({ play: 0.0 }, connectors.library.bosch.vacuumConnectorOrbitalSanderGSS12V13.plug);
-  const connector2 = connectors.invert({ play: 0.0 }, connectors.library.festool.hoseConnector34.plug);
+  const connector1 = connectors.invert({ play: 0.0 }, connectors.library.bosch.OrbitalSander_GSS12V13_O28.plug);
+  const connector2 = connectors.invert({ play: 0.0 }, connectors.library.festool.ConnectingSleeve_O34_I27.plug);
   const bendAngle = degToRad(30);
   const wallThickness = 2;
   const segments = 64;

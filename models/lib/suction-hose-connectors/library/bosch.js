@@ -2,7 +2,7 @@
 
 const construct = require('../construct');
 
-const vacuumConnectorOrbitalSanderGSS12V13 = {
+const OrbitalSander_GSS12V13_O28 = {
   plug:
     construct.plug({
       outerDiameterA: 28,
@@ -14,5 +14,5 @@ const vacuumConnectorOrbitalSanderGSS12V13 = {
 };
 
 module.exports = {
-  vacuumConnectorOrbitalSanderGSS12V13,
+  OrbitalSander_GSS12V13_O28,
 };
