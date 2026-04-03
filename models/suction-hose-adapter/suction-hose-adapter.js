@@ -26,10 +26,14 @@ const main = (params) => {
     r.innerRadiusRingA = c.isSocket ? r.innerRadiusA - wallThickness : r.innerRadiusA;
     r.distanceAB = c.distanceAB;
     r.heightRingA = c.heightRingA ?? 5;
+    r.maxOuterRadius = Math.max(r.outerRadiusA, r.outerRadiusB, r.outerRadiusRingA);
     return r;
   }
   const connector1Radius = radius(connector1);
   const connector2Radius = radius(connector2);
+
+  const maxOuterRadius = Math.max(connector1Radius.maxOuterRadius, connector2Radius.maxOuterRadius);
+
   const bendOuterRadius = Math.min(connector1Radius.outerRadiusRingA, connector2Radius.outerRadiusRingA);
   const bendInnerRadius = Math.min(connector1Radius.innerRadiusRingA, connector2Radius.innerRadiusRingA);
   const bendCurveRadius = bendOuterRadius * 2;
@@ -46,13 +50,14 @@ const main = (params) => {
     const objects = [];
     objects.push(align({}, tubeElliptic({ ...tube, segments })));
 
-    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, 7.5], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 7.5, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: 2, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 7.5, dimensions: [tube.endOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: 2, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
+    const dimensionDistanceOffset = maxOuterRadius - c.maxOuterRadius;
+    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, dimensionDistanceOffset + 7.5], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: dimensionDistanceOffset + 7.5, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: dimensionDistanceOffset + 2, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: dimensionDistanceOffset + 2, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: dimensionDistanceOffset + 7.5, dimensions: [tube.endOuterRadius * 2, 0, 0] }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: dimensionDistanceOffset + 2, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
+    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: dimensionDistanceOffset + 2, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
 
     return translate([0, 0, mirror ? tube.height : 0], mirror ? mirrorZ(objects) : objects);
   }
