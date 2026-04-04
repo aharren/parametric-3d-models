@@ -4,17 +4,24 @@ const { rotate, translate, align, mirrorZ } = require('@jscad/modeling').transfo
 const { degToRad } = require('@jscad/modeling/src').utils;
 
 const { tubeElliptic, tubeCurved } = require('../../lib/tubes');
+const config = require('../../lib/config');
 const visuals = require('../../lib/visuals');
 const preview = require('../../lib/preview');
 
 const connectors = require('../lib/suction-hose-connectors');
 
 const main = (params) => {
-  const connector1 = connectors.invert({ play: 0.0 }, connectors.library.bosch.OrbitalSander_GSS12V13_O28.plug);
-  const connector2 = connectors.invert({ play: 0.0 }, connectors.library.festool.ConnectingSleeve_O34_I27.plug);
-  const bendAngle = degToRad(30);
-  const wallThickness = 2;
-  const segments = 64;
+  const { connector1, connector2, bendAngle, wallThickness, segments } = config({
+    params,
+    //config: require('./boschOrbitalSanderGSS12V13_festoolConnectingSleeve'),
+    defaults: {
+      connector1: connectors.invert({ play: 0.0 }, connectors.library.test.o57.plug),
+      connector2: connectors.invert({ play: 0.0 }, connectors.library.test.o50.socket),
+      bendAngle: degToRad(30),
+      wallThickness: 2,
+      segments: 64,
+    }
+  });
 
   const radius = (c) => {
     const r = {};
@@ -114,4 +121,4 @@ const main = (params) => {
   return align({ grouped: true }, rotate([0, bendAngle, 0], objects));
 }
 
-module.exports = { ...preview.main({ xRay: true, dimensions: false }, main) };
+module.exports = { ...preview.main({ xRay: true, dimensions: false }, main), ...config(), };
