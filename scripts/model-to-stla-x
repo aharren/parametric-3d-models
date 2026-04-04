@@ -13,9 +13,10 @@ if [[ -d "${file}" ]]; then
 else
   dir=$(dirname "${file}")
 fi
+modelName=$(basename "${dir}")
 configs=(${dir}/*(/N))
 for config in ${configs}; do
-  name=$(basename "${config}")
+  configName=$(basename "${config}")
   echo "model configuration: ${config}"
-  ./node_modules/.bin/jscad "${file}" -of stla -o "${config}/${name}.stl" --config "${config}" $@
+  ./node_modules/.bin/jscad "${file}" -of stla -o "${config}/${modelName}-${configName}.stl" --config "${config}" $@
 done
