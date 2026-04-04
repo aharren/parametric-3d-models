@@ -53,15 +53,16 @@ const main = (params) => {
     const objects = [];
     objects.push(align({}, tubeElliptic({ ...tube, segments })));
 
-    const distance = dimensionStartDistance + maxOuterRadius - c.maxOuterRadius;
-    objects.push(preview.only(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, distance + 2 * dimensionDistance], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 2 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 2 * dimensionDistance, dimensions: [tube.endOuterRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
-
+    preview.only(() => {
+      const distance = dimensionStartDistance + maxOuterRadius - c.maxOuterRadius;
+      objects.push(visuals.dimensions({ modes: ['none', 'none', 'right'], distance: [2, distance + 2 * dimensionDistance], dimensions: [0, 0, tube.height], mirror: [false, false, !mirror] }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 2 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0] }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 2 * dimensionDistance, dimensions: [tube.endOuterRadius * 2, 0, 0] }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.endOuterRadius * 2, 0, 0], types: 'guards' }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 1 * dimensionDistance, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0]));
+    });
     return translate([0, 0, mirror ? tube.height : 0], mirror ? mirrorZ(objects) : objects);
   }
 
@@ -77,10 +78,12 @@ const main = (params) => {
     const objects = [];
     objects.push(align({}, tubeElliptic({ ...tube, segments })));
 
-    const distance = dimensionStartDistance + maxOuterRadius - c.maxOuterRadius;
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0])));
-    objects.push(preview.only(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0])));
+    preview.only(() => {
+      const distance = dimensionStartDistance + maxOuterRadius - c.maxOuterRadius;
+      objects.push(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.startOuterRadius * 2, 0, 0], types: 'guards' }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['bottom', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.startInnerRadius * 2, 0, 0] }, objects[0]));
+      objects.push(visuals.dimensions({ modes: ['top', 'none', 'none'], distance: distance + 0 * dimensionDistance, dimensions: [tube.endInnerRadius * 2, 0, 0] }, objects[0]));
+    });
 
     return translate([0, 0, mirror ? tube.height : 0], mirror ? mirrorZ(objects) : objects);
   }
