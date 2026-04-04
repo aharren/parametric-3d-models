@@ -1,0 +1,21 @@
+#! /usr/bin/env zsh
+
+file=$1
+shift
+
+# generate STLA file for the given model
+echo "model: ${file}"
+./node_modules/.bin/jscad "${file}" -of stla $@
+
+# generate STLA files for all existing configurations of the model
+if [[ -d "${file}" ]]; then
+  dir="${file}"
+else
+  dir=$(dirname "${file}")
+fi
+configs=(${dir}/*(/N))
+for config in ${configs}; do
+  name=$(basename "${config}")
+  echo "model configuration: ${config}"
+  ./node_modules/.bin/jscad "${file}" -of stla -o "${config}/${name}.stl" --config "${config}" $@
+done

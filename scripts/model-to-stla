@@ -3,4 +3,6 @@
 file=$1
 shift
 
-./node_modules/.bin/jscad "$file" -of stla $@
+# generate STLA file for the given model
+echo "model: ${file}"
+./node_modules/.bin/jscad "${file}" -of stla $@
