@@ -7,15 +7,22 @@ const { rotateY, align } = require('@jscad/modeling').transforms;
 const hooks = require('../lib/skadis-hooks');
 
 const grid = require('../../lib/grid');
+const config = require('../../lib/config');
 const preview = require('../../lib/preview');
 
 const main = (params) => {
-  const height = 60;
-  const width = 10;
-  const depth = 10;
-  const holeDistance = 20;
-  const holeDiameter = 8;
-  const combineHoles = false;
+  const { height, width, depth, holeDistance, holeDiameter, combineHoles } = config({
+    params,
+    //config: require('./60-10-10-20-8-combined'),
+    defaults: {
+      height: 60,
+      width: 10,
+      depth: 10,
+      holeDistance: 20,
+      holeDiameter: 8,
+      combineHoles: false,
+    }
+  });
 
   const hole = (width, height) => {
     const cyl = grid.at([0, 0, 0], cylinder({ radius: width / 2, height }));
@@ -49,4 +56,4 @@ const main = (params) => {
   return model;
 }
 
-module.exports = { ...preview.main({ xRay: false }, main) };
+module.exports = { ...preview.main({ xRay: false }, main), ...config() };
