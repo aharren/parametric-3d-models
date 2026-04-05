@@ -4,7 +4,7 @@ const { cuboid } = require('@jscad/modeling').primitives;
 const { union, subtract } = require('@jscad/modeling').booleans;
 const { align } = require('@jscad/modeling').transforms;
 
-const hooks = require('../lib/skadis-hooks');
+const hooks = require('../lib/ikea-skadis-hooks');
 
 const grid = require('../../lib/grid');
 const config = require('../../lib/config');
