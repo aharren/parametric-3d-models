@@ -12,4 +12,4 @@ const config = {
   segments: 64,
 };
 
-module.exports = config;
+module.exports = require('../../../lib/submodel').exports(require('../suction-hose-adapter'), config);
