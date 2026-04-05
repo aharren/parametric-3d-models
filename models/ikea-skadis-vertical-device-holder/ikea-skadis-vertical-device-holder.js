@@ -7,31 +7,27 @@ const { align } = require('@jscad/modeling').transforms;
 const hooks = require('../lib/skadis-hooks');
 
 const grid = require('../../lib/grid');
+const config = require('../../lib/config');
 const preview = require('../../lib/preview');
 
 const main = (params) => {
-  // Wifi Access Point
-  const deviceHeight = 22.5;
-  const deviceWidth = 98;
-  const deviceDepthEnclosed = 25;
-  const bottomBorderWidth = 13;
-  // Zigbee Bridge
-  //const deviceHeight = 26.5;
-  //const deviceWidth = 90;
-  //const deviceDepthEnclosed = 25;
-  //const bottomBorderWidth = 19;
-  // Network Switch
-  //const deviceHeight = 29 - 2; // incl. feet, minus bracketDepth (2) for that side
-  //const deviceWidth = 94.3;
-  //const deviceDepthEnclosed = 25;
-  //const bottomBorderWidth = 5;
+  const { deviceHeight, deviceWidth, deviceDepthEnclosed, bottomBorderWidth, wallThickness, numBracketsX, numBracketsY, bracketWidth, bracketDepth } = config({
+    params,
+    //config: require('./apple-airport-express-gen2'),
+    defaults: {
+      deviceHeight: 22.5,
+      deviceWidth: 98,
+      deviceDepthEnclosed: 25,
+      bottomBorderWidth: 13,
 
-  const wallThickness = 4;
+      wallThickness: 4,
 
-  const numBracketsX = 2;
-  const numBracketsY = 2;
-  const bracketWidth = 2;
-  const bracketDepth = 2;
+      numBracketsX: 2,
+      numBracketsY: 2,
+      bracketWidth: 2,
+      bracketDepth: 2,
+    }
+  });
 
   const shellInnerSize = [deviceWidth + 2 * bracketDepth, deviceHeight + 2 * bracketDepth, deviceDepthEnclosed + 2 * bracketDepth];
   const shellOuterSize = [shellInnerSize[0] + 2 * wallThickness, shellInnerSize[1] + 2 * wallThickness, shellInnerSize[2] + 1 * wallThickness];
