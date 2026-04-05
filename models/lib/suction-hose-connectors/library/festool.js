@@ -2,7 +2,7 @@
 
 const construct = require('../construct');
 
-const ConnectingSleeve_O34_I27 = {
+const ConnectingSleeve_D27_O34_I27 = {
   plug:
     construct.plug({
       outerDiameterA: 34,
@@ -14,5 +14,5 @@ const ConnectingSleeve_O34_I27 = {
 }
 
 module.exports = {
-  ConnectingSleeve_O34_I27,
+  ConnectingSleeve_D27_O34_I27,
 };

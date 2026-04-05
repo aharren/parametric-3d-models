@@ -13,7 +13,7 @@ const connectors = require('../lib/suction-hose-connectors');
 const main = (params) => {
   const { connector1, connector2, bendAngle, wallThickness, segments } = config({
     params,
-    //config: require('./boschOrbitalSanderGSS12V13_festoolConnectingSleeve'),
+    //config: require('./bosch-orbital-sander-gss12v13-festool-connecting-sleeve-d27'),
     defaults: {
       connector1: connectors.invert({ play: 0.0 }, connectors.library.test.o57.plug),
       connector2: connectors.invert({ play: 0.0 }, connectors.library.test.o50.socket),
