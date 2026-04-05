@@ -14,4 +14,4 @@ const config = {
   bracketDepth: 2,
 };
 
-module.exports = config;
+module.exports = require('../../../lib/submodel').exports(require('../ikea-skadis-vertical-device-holder'), config);

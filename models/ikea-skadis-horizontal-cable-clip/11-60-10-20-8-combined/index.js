@@ -9,4 +9,4 @@ const config = {
   combineHoles: true,
 };
 
-module.exports = config;
+module.exports = require('../../../lib/submodel').exports(require('../ikea-skadis-horizontal-cable-clip'), config);
