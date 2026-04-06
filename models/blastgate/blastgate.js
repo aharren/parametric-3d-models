@@ -1,145 +1,139 @@
 const { cuboid, sphere, cylinder } = require('@jscad/modeling').primitives;
 const { intersect, subtract, union } = require('@jscad/modeling').booleans;
-const { mirrorX, mirrorY, rotateX } = require('@jscad/modeling').transforms;
+const { mirrorX, mirrorY, rotateX, align } = require('@jscad/modeling').transforms;
 const { measureDimensions } = require('@jscad/modeling').measurements;
 
 const colorize = require('../../lib/colorize');
+const grid = require('../../lib/grid');
+const config = require('../../lib/config');
 const preview = require('../../lib/preview');
 
-const OBJECT_BALL = 'ball';
-const OBJECT_ENCLOSING = 'enclosing';
-const OBJECT_ROTATION_ELEMENT = 'rotation_element';
-
-const DEFAULT_OBJECT = OBJECT_BALL;
-
-const getParameterDefinitions = () => {
-  return [
-    { name: 'pipe_outer_diameter', type: 'float', initial: 60, caption: "pipe, outer diameter [mm]" },
-    { name: 'pipe_inner_diameter', type: 'float', initial: 56, caption: "pipe, inner diameter [mm]" },
-    { name: 'pipe_connector_length', type: 'float', initial: 20, caption: "pipe, connector length [mm]" },
-    { name: 'object', type: 'choice', initial: DEFAULT_OBJECT, caption: 'object', values: [OBJECT_BALL, OBJECT_ENCLOSING, OBJECT_ROTATION_ELEMENT], captions: ['ball', 'enclosing', 'rotation element'] }
-  ];
-}
-
 const main = (params) => {
-  const pipe_outer_diameter = params.pipe_outer_diameter;
-  const pipe_inner_diameter = params.pipe_inner_diameter;
-  const pipe_connector_length = Math.max(10, params.pipe_connector_length);
-  const object = params.object;
+  const { pipeOuterDiameter, pipeInnerDiameter, pipeConnectorLength, baseHeight, screwHoleDiameter, screeHoleEdgeDistance, wallThickness, segments, play } = config({
+    params,
+    defaults: {
+      pipeOuterDiameter: 60,
+      pipeInnerDiameter: 56,
+      pipeConnectorLength: 20,
+      baseHeight: 10,
+      screwHoleDiameter: 5,
+      screeHoleEdgeDistance: 4,
+      wallThickness: 2,
+      segments: 64,
+      play: 0.4,
+    }
+  });
 
-  const num_segments = 100;
+  const ballDiameter = pipeOuterDiameter * 1.5;
+  const enclosingDiameter = ballDiameter + wallThickness * 2;
+  const mountWidth = 12;
+  const rotationHoleDiameter = 12;
 
-  const wall_thickness = 5;
-
-  const ball_diameter = pipe_outer_diameter * 1.5;
-  const enclosing_diameter = ball_diameter + wall_thickness * 2;
-  const mount_width = wall_thickness * 4;
-  const rotation_hole_diameter = 12;
-  const base_height = 10;
-  const screw_hole_diameter = 5;
-  const screw_hole_edge_distance = 4;
-
-  const spiel = 0.4;
-
-  const ball_with_side_flattening = (space = 0) => {
-    const new_ball_diameter = ball_diameter + space * 2;
-    const outer_sphere = sphere({ radius: new_ball_diameter / 2, segments: num_segments });
-    const cube = cuboid({ size: [new_ball_diameter, new_ball_diameter - wall_thickness * 2, new_ball_diameter] });
+  const ballWithSideFlattening = (space = 0) => {
+    const newBallDiameter = ballDiameter + space * 2;
+    const outerSphere = sphere({ radius: newBallDiameter / 2, segments });
+    const cube = cuboid({ size: [newBallDiameter, newBallDiameter - wallThickness * 2, newBallDiameter] });
 
     return intersect(
       cube,
-      outer_sphere
+      outerSphere
     );
   }
 
   // build the ball
   const ball = () => {
-    const outer_sphere = ball_with_side_flattening();
-    const inner_pipe = cylinder({ radius: pipe_inner_diameter / 2, height: ball_diameter, segments: num_segments });
-    const side_mount_1 = cuboid({ size: [mount_width, wall_thickness, mount_width], center: [0, ball_diameter / 2 - wall_thickness * 1 - wall_thickness / 2, 0] });
-    const side_mount_2 = mirrorY(side_mount_1);
+    const outerSphere = ballWithSideFlattening();
+    const innerPipe = cylinder({ radius: pipeInnerDiameter / 2, height: ballDiameter, segments });
+    const sideMount1 = cuboid({ size: [mountWidth, wallThickness, mountWidth], center: [0, ballDiameter / 2 - wallThickness * 1 - wallThickness / 2, 0] });
+    const sideMount2 = mirrorY(sideMount1);
 
-    const ball_1 = subtract(
-      outer_sphere,
-      inner_pipe,
-      side_mount_1,
-      side_mount_2,
+    const ball1 = subtract(
+      outerSphere,
+      innerPipe,
+      sideMount1,
+      sideMount2,
     );
 
-    const ball_1_height = measureDimensions(ball_1)[2];
-    const cube = cuboid({ size: [ball_diameter, ball_diameter, ball_1_height - 2] });
+    const ball1Height = measureDimensions(ball1)[2];
+    const cube = cuboid({ size: [ballDiameter, ballDiameter, ball1Height - 2] });
 
-    return intersect(
-      cube,
-      ball_1,
+    return align({},
+      intersect(
+        cube,
+        ball1,
+      )
     );
   }
 
   // build the enclosing (one half)
   const enclosing = () => {
-    const ball_negative = ball_with_side_flattening(spiel);
-    const outer_sphere = sphere({ radius: enclosing_diameter / 2, segments: num_segments });
+    const ballNegative = ballWithSideFlattening(play);
+    const outerSphere = sphere({ radius: enclosingDiameter / 2, segments });
 
-    const pipe_length = ball_diameter / 2 + pipe_connector_length;
-    const outer_pipe = cylinder({ radius: pipe_outer_diameter / 2, height: pipe_length, segments: num_segments, center: [0, 0, pipe_length / 2] });
-    const inner_pipe = cylinder({ radius: pipe_inner_diameter / 2, height: pipe_length, segments: num_segments, center: [0, 0, pipe_length / 2] });
+    const pipeLength = ballDiameter / 2 + pipeConnectorLength;
+    const outerPipe = cylinder({ radius: pipeOuterDiameter / 2, height: pipeLength, segments, center: [0, 0, pipeLength / 2] });
+    const innerPipe = cylinder({ radius: pipeInnerDiameter / 2, height: pipeLength, segments, center: [0, 0, pipeLength / 2] });
 
-    const rotation_hole = rotateX(Math.PI / 2, cylinder({ radius: rotation_hole_diameter / 2 + spiel, height: enclosing_diameter, segments: num_segments }));
+    const rotationHole = rotateX(Math.PI / 2, cylinder({ radius: rotationHoleDiameter / 2 + play, height: enclosingDiameter, segments }));
 
-    const base = cuboid({ size: [enclosing_diameter, enclosing_diameter, base_height], center: [0, 0, base_height / 2] });
-    const base_mount_1 = cylinder({ radius: screw_hole_diameter / 2, height: base_height, segments: num_segments, center: [-enclosing_diameter / 2 + screw_hole_diameter / 2 + screw_hole_edge_distance, -enclosing_diameter / 2 + screw_hole_diameter / 2 + screw_hole_edge_distance, base_height / 2] });
-    const base_mount_2 = mirrorX(base_mount_1);
-    const base_mount_3 = mirrorY(base_mount_2);
-    const base_mount_4 = mirrorX(base_mount_3);
+    const base = cuboid({ size: [enclosingDiameter, enclosingDiameter, baseHeight], center: [0, 0, baseHeight / 2] });
+    const baseMount1 = cylinder({ radius: screwHoleDiameter / 2, height: baseHeight, segments, center: [-enclosingDiameter / 2 + screwHoleDiameter / 2 + screeHoleEdgeDistance, -enclosingDiameter / 2 + screwHoleDiameter / 2 + screeHoleEdgeDistance, baseHeight / 2] });
+    const baseMount2 = mirrorX(baseMount1);
+    const baseMount3 = mirrorY(baseMount2);
+    const baseMount4 = mirrorX(baseMount3);
 
-    const cube = cuboid({ size: [enclosing_diameter, enclosing_diameter, enclosing_diameter + pipe_connector_length], center: [0, 0, enclosing_diameter / 2 + pipe_connector_length / 2] });
+    const cube = cuboid({ size: [enclosingDiameter, enclosingDiameter, enclosingDiameter + pipeConnectorLength], center: [0, 0, enclosingDiameter / 2 + pipeConnectorLength / 2] });
 
-    return intersect(
-      cube,
-      subtract(
-        union(
-          outer_sphere,
-          outer_pipe,
-          base,
-        ),
-        inner_pipe,
-        ball_negative,
-        rotation_hole,
-        base_mount_1,
-        base_mount_2,
-        base_mount_3,
-        base_mount_4,
+    return align({},
+      intersect(
+        cube,
+        subtract(
+          union(
+            outerSphere,
+            outerPipe,
+            base,
+          ),
+          innerPipe,
+          ballNegative,
+          rotationHole,
+          baseMount1,
+          baseMount2,
+          baseMount3,
+          baseMount4,
+        )
       )
     );
   }
 
-  const rotation_element = () => {
-    const side_mount_height = wall_thickness - spiel;
-    const rotator_mount_height = wall_thickness;
-    const rotation_hole_height = enclosing_diameter - ball_diameter + rotator_mount_height;
+  const rotationElement = () => {
+    const sideMountHeight = wallThickness - play;
+    const rotatorMountHeight = wallThickness;
+    const rotationHoleHeight = enclosingDiameter - ballDiameter + rotatorMountHeight;
 
-    const side_mount = cuboid({ size: [mount_width, mount_width, side_mount_height], center: [0, 0, side_mount_height / 2] });
+    const sideMount = cuboid({ size: [mountWidth, mountWidth, sideMountHeight], center: [0, 0, sideMountHeight / 2] });
 
-    const rotation_hole = cylinder({ radius: rotation_hole_diameter / 2 - spiel * 2, height: rotation_hole_height, segments: num_segments, center: [0, 0, side_mount_height + rotation_hole_height / 2] });
+    const rotationHole = cylinder({ radius: rotationHoleDiameter / 2 - play * 2, height: rotationHoleHeight, segments, center: [0, 0, sideMountHeight + rotationHoleHeight / 2] });
 
-    const rotator_mount_1 = cuboid({ size: [mount_width, mount_width, rotator_mount_height], center: [-mount_width / 2 - wall_thickness / 2, 0, side_mount_height + rotation_hole_height - rotator_mount_height / 2] });
-    const rotator_mount_2 = mirrorX(rotator_mount_1);
+    const rotatorMount1 = cuboid({ size: [mountWidth, mountWidth, rotatorMountHeight], center: [-mountWidth / 2 - wallThickness / 2, 0, sideMountHeight + rotationHoleHeight - rotatorMountHeight / 2] });
+    const rotatorMount2 = mirrorX(rotatorMount1);
 
-    return subtract(
-      union(
-        side_mount,
-        rotation_hole,
-      ),
-      rotator_mount_1,
-      rotator_mount_2,
+    return align({},
+      subtract(
+        union(
+          sideMount,
+          rotationHole,
+        ),
+        rotatorMount1,
+        rotatorMount2,
+      )
     );
   }
 
-  return [
-    ...object === OBJECT_BALL ? [colorize.red(ball())] : [],
-    ...object === OBJECT_ENCLOSING ? [colorize.blue(enclosing())] : [],
-    ...object === OBJECT_ROTATION_ELEMENT ? [colorize.yellow(rotation_element())] : [],
-  ];
+  return grid.distribute([20, null, null],
+    colorize.red(ball()),
+    colorize.blue(enclosing()),
+    colorize.yellow(rotationElement())
+  );
 }
 
-module.exports = { ...preview.main({}, main), getParameterDefinitions };
+module.exports = { ...preview.main({ xRay: false, dimensions: true }, main), ...config(), };
