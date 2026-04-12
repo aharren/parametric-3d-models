@@ -13,11 +13,11 @@ const preview = require('../../lib/preview');
 const main = (params) => {
   const { height, width, depth, holeDistance, holeDiameter, combineHoles } = config({
     params,
-    //config: require('./60-10-10-20-8-combined'),
+    //config: require('./60-11-11-20-8-combined'),
     defaults: {
       height: 60,
-      width: 10,
-      depth: 10,
+      width: 11,
+      depth: 11,
       holeDistance: 20,
       holeDiameter: 8,
       combineHoles: false,
