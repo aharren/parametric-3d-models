@@ -13,11 +13,11 @@ const preview = require('../../lib/preview');
 const main = (params) => {
   const { height, width, depth, holeDistance, holeDiameter, combineHoles } = config({
     params,
-    //config: require('./11-60-10-20-8-combined'),
+    //config: require('./11-60-11-20-8-combined'),
     defaults: {
       height: hooks.sizes.hook.height,
       width: 60,
-      depth: 10,
+      depth: 11,
       holeDistance: 20,
       holeDiameter: 8,
       combineHoles: false,
