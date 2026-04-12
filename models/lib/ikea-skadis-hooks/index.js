@@ -11,7 +11,7 @@ const sizes = {
   hook: {
     width: 4.9,
     height: 11,
-    depth: 5.4,
+    depth: 5.3,
     thickness: 6,
   },
   grid: {
