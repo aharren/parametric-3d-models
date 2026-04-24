@@ -70,7 +70,7 @@ const main = (params) => {
   );
   const model = union(
     align({ modes: ['center', 'max', 'max'] }, shellWithInnerBrackets),
-    align({ modes: ['center', 'min', 'max'] }, hooks.grid(shellOuterSize[0], shellOuterSize[1]))
+    align({ modes: ['center', 'min', 'max'] }, hooks.grid(shellOuterSize[0], shellOuterSize[2]))
   );
   return grid.center(model);
 }
