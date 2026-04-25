@@ -6,7 +6,7 @@ const bracketDepth = 2;
 const config = {
   deviceHeight: 29 - bracketDepth, // 29 incl. feet, minus bracketDepth for the feet side
   deviceWidth: 158.3,
-  deviceDepthEnclosed: 25,
+  deviceDepthEnclosed: 29,
   bottomBorderWidth: 5,
 
   wallThickness: 4,

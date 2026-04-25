@@ -17,7 +17,7 @@ const main = (params) => {
     defaults: {
       deviceHeight: 22.5,
       deviceWidth: 98,
-      deviceDepthEnclosed: 25,
+      deviceDepthEnclosed: 29,
       bottomBorderWidth: 13,
 
       wallThickness: 4,
@@ -29,7 +29,7 @@ const main = (params) => {
     }
   });
 
-  const shellInnerSize = [deviceWidth + 2 * bracketDepth, deviceHeight + 2 * bracketDepth, deviceDepthEnclosed + 2 * bracketDepth];
+  const shellInnerSize = [deviceWidth + 2 * bracketDepth, deviceHeight + 2 * bracketDepth, deviceDepthEnclosed];
   const shellOuterSize = [shellInnerSize[0] + 2 * wallThickness, shellInnerSize[1] + 2 * wallThickness, shellInnerSize[2] + 1 * wallThickness];
 
   const shell = () => {

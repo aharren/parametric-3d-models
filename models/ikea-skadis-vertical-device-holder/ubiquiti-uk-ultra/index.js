@@ -4,7 +4,7 @@
 const config = {
   deviceHeight: 33.2,
   deviceWidth: 84,
-  deviceDepthEnclosed: 25,
+  deviceDepthEnclosed: 29,
   bottomBorderWidth: 20,
 
   wallThickness: 4,
