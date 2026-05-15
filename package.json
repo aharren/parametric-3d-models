@@ -2,5 +2,8 @@
   "type": "commonjs",
   "dependencies": {
     "@jscad/cli": "2.3.6"
+  },
+  "scripts": {
+    "preinstall": "echo 'error: npm scripts are enabled; disable scripts or use npm install --ignore-scripts'; exit 1"
   }
 }

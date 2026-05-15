@@ -9,7 +9,7 @@ Clone the Git repository and install dependencies via [Node](https://nodejs.org)
 ```
 git clone https://github.com/aharren/parametric-3d-models.git
 cd parametric-3d-models
-npm install
+npm install --ignore-scripts
 ```
 
 ## Editing
