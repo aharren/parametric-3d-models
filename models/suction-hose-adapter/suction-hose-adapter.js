@@ -11,12 +11,14 @@ const preview = require('../../lib/preview');
 const connectors = require('../lib/suction-hose-connectors');
 
 const main = (params) => {
-  const { connector1, connector2, bendAngle, wallThickness, segments } = config({
+  const { connector1, connector1Modifier, connector2, connector2Modifier, bendAngle, wallThickness, segments } = config({
     params,
     //config: require('./bosch-orbital-sander-gss12v13-festool-connecting-sleeve-d27'),
     defaults: {
       connector1: connectors.invert({ play: 0.0 }, connectors.library.test.o57.plug),
+      connector1Modifier: (object) => { return object; },
       connector2: connectors.invert({ play: 0.0 }, connectors.library.test.o50.socket),
+      connector2Modifier: (object) => { return object; },
       bendAngle: degToRad(30),
       wallThickness: 2,
       segments: 64,
@@ -48,7 +50,7 @@ const main = (params) => {
   const dimensionStartDistance = 20;
   const dimensionDistance = 8;
 
-  const segmentBA = (c, mirror) => {
+  const segmentBA = (c, mirror, modifier) => {
     const tube = {
       startOuterRadius: c.outerRadiusB,
       startInnerRadius: c.innerRadiusB,
@@ -59,6 +61,7 @@ const main = (params) => {
 
     const objects = [];
     objects.push(align({}, tubeElliptic({ ...tube, segments })));
+    objects[0] = modifier(objects[0]);
 
     preview.only(() => {
       const distance = dimensionStartDistance + maxOuterRadius - c.maxOuterRadius;
@@ -110,13 +113,13 @@ const main = (params) => {
   }
 
   const objects = [];
-  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1Radius.distanceAB - connector1Radius.heightRingA], segmentBA(connector1Radius, false))));
+  objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1Radius.distanceAB - connector1Radius.heightRingA], segmentBA(connector1Radius, false, connector1Modifier))));
   objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0 - connector1Radius.heightRingA], segmentRingA(connector1Radius, false))));
   if (bendAngle > 0) {
     objects.push(rotate([0, -bendAngle, 0], translate([-bendCurveRadius, 0, 0], segmentCurve())));
   }
   objects.push(translate([-bendCurveRadius, 0, 0], segmentRingA(connector2Radius, true)));
-  objects.push(translate([-bendCurveRadius, 0, connector2Radius.heightRingA], segmentBA(connector2Radius, true)));
+  objects.push(translate([-bendCurveRadius, 0, connector2Radius.heightRingA], segmentBA(connector2Radius, true, connector2Modifier)));
 
   return align({ grouped: true }, rotate([0, bendAngle, 0], objects));
 }
