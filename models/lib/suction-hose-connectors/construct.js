@@ -79,8 +79,14 @@ const invert = (options, object) => {
   }
 }
 
+// applies the given modification function to the given connector object
+const modify = (fn, object) => {
+  return fn(object);
+}
+
 module.exports = {
   plug,
   socket,
   invert,
+  modify,
 };

@@ -9,5 +9,6 @@ module.exports = {
     socket: construct.socket,
   },
   invert: construct.invert,
+  modify: construct.modify,
   library,
 };
